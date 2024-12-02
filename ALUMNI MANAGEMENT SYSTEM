@@ -1,0 +1,178 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.ArrayList;
+
+// Class to represent Alumni
+class Alumni {
+    String name;
+    String batch;
+    String department;
+    String email;
+
+    Alumni(String name, String batch, String department, String email) {
+        this.name = name;
+        this.batch = batch;
+        this.department = department;
+        this.email = email;
+    }
+
+    @Override
+    public String toString() {
+        return "Name: " + name + "\nBatch: " + batch + "\nDepartment: " + department + "\nEmail: " + email + "\n\n";
+    }
+}
+
+public class AlumniManagementSystem {
+
+    // Main frame and components
+    private JFrame mainFrame;
+    private JPanel mainPanel, addPanel, viewPanel, searchPanel;
+    private JTextField nameField, batchField, departmentField, emailField, searchField;
+    private JTextArea alumniTextArea;
+    private JButton addButton, viewButton, searchButton, clearButton;
+
+    // List to hold alumni records
+    private ArrayList<Alumni> alumniList = new ArrayList<>();
+
+    // Constructor
+    public AlumniManagementSystem() {
+        mainFrame = new JFrame("Alumni Management System");
+        mainFrame.setSize(500, 400);
+        mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        mainFrame.setLocationRelativeTo(null);
+
+        // Main panel to hold all screens
+        mainPanel = new JPanel();
+        mainPanel.setLayout(new CardLayout());
+
+        // Add Alumni Panel
+        addPanel = new JPanel();
+        addPanel.setLayout(new GridLayout(5, 2));
+        addPanel.add(new JLabel("Name:"));
+        nameField = new JTextField(20);
+        addPanel.add(nameField);
+
+        addPanel.add(new JLabel("Batch:"));
+        batchField = new JTextField(20);
+        addPanel.add(batchField);
+
+        addPanel.add(new JLabel("Department:"));
+        departmentField = new JTextField(20);
+        addPanel.add(departmentField);
+
+        addPanel.add(new JLabel("Email:"));
+        emailField = new JTextField(20);
+        addPanel.add(emailField);
+
+        addButton = new JButton("Add Alumni");
+        addPanel.add(addButton);
+
+        // View Alumni Panel
+        viewPanel = new JPanel();
+        viewPanel.setLayout(new BorderLayout());
+
+        alumniTextArea = new JTextArea();
+        alumniTextArea.setEditable(false);
+        viewPanel.add(new JScrollPane(alumniTextArea), BorderLayout.CENTER);
+
+        // Search Panel
+        searchPanel = new JPanel();
+        searchPanel.setLayout(new BorderLayout());
+
+        searchField = new JTextField();
+        searchPanel.add(new JLabel("Search Alumni by Name:"), BorderLayout.NORTH);
+        searchPanel.add(searchField, BorderLayout.CENTER);
+
+        searchButton = new JButton("Search");
+        searchPanel.add(searchButton, BorderLayout.SOUTH);
+
+        // Buttons to switch between screens
+        JPanel navigationPanel = new JPanel();
+        viewButton = new JButton("View All Alumni");
+        navigationPanel.add(viewButton);
+
+        clearButton = new JButton("Clear Search");
+        navigationPanel.add(clearButton);
+
+        mainFrame.add(navigationPanel, BorderLayout.NORTH);
+        mainPanel.add(addPanel, "Add Alumni");
+        mainPanel.add(viewPanel, "View Alumni");
+        mainPanel.add(searchPanel, "Search Alumni");
+        mainFrame.add(mainPanel, BorderLayout.CENTER);
+
+        // Action Listeners
+        addButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String name = nameField.getText();
+                String batch = batchField.getText();
+                String department = departmentField.getText();
+                String email = emailField.getText();
+                if (!name.isEmpty() && !batch.isEmpty() && !department.isEmpty() && !email.isEmpty()) {
+                    Alumni alumni = new Alumni(name, batch, department, email);
+                    alumniList.add(alumni);
+                    JOptionPane.showMessageDialog(mainFrame, "Alumni Added Successfully!");
+                    nameField.setText("");
+                    batchField.setText("");
+                    departmentField.setText("");
+                    emailField.setText("");
+                } else {
+                    JOptionPane.showMessageDialog(mainFrame, "Please fill in all fields.");
+                }
+            }
+        });
+
+        viewButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                CardLayout cl = (CardLayout)(mainPanel.getLayout());
+                cl.show(mainPanel, "View Alumni");
+                showAlumniList();
+            }
+        });
+
+        searchButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String searchName = searchField.getText().toLowerCase();
+                boolean found = false;
+                StringBuilder result = new StringBuilder();
+                for (Alumni alumni : alumniList) {
+                    if (alumni.name.toLowerCase().contains(searchName)) {
+                        result.append(alumni.toString());
+                        found = true;
+                    }
+                }
+                if (found) {
+                    alumniTextArea.setText(result.toString());
+                } else {
+                    alumniTextArea.setText("No alumni found with the given name.");
+                }
+            }
+        });
+
+        clearButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                searchField.setText("");
+                alumniTextArea.setText("");
+            }
+        });
+    }
+
+    // Method to display all alumni records
+    private void showAlumniList() {
+        StringBuilder result = new StringBuilder();
+        for (Alumni alumni : alumniList) {
+            result.append(alumni.toString());
+        }
+        alumniTextArea.setText(result.toString());
+    }
+
+    // Method to display the main frame
+    public void display() {
+        mainFrame.setVisible(true);
+    }
+
+    public static void main(String[] args) {
+        AlumniManagementSystem system = new AlumniManagementSystem();
+        system.display();
+    }
+}
